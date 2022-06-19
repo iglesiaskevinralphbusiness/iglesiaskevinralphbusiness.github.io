@@ -1,0 +1,214 @@
+<html>
+
+<head>
+	<title>React JS - Functional</title>
+	<link href="common/css/reset.css" rel="stylesheet" />
+	<link href="common/css/style.css" rel="stylesheet" />
+	<link href="common/css/media.css" rel="stylesheet" />
+	
+	<link rel="stylesheet" href="libs/tinymace/prism.css">
+	
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+</head>
+
+<body>
+<div class="content" id="top">
+<!--Write your content here-->
+<h1>React JS Functional</h1>
+
+	
+
+
+<h2>Structure</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Constant</h3>
+	<pre><code class="language-javascript">const Home = () => {
+	...
+}
+export default Home;</code></pre>
+
+	<h3 id="h3-1">Function</h3>
+	<pre><code class="language-javascript">function Home(){
+	...
+}
+export default Home;</code></pre>
+</div>
+
+<h2>Props</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Parent</h3>
+	<pre><code class="language-javascript">const items = [1, 2, 3];
+let active = 1;
+const handleUpdate = (val) => {
+	active = val;
+}
+		
+&lt;LISTING items="items" active="active" handleUpdate="handleUpdate" /&gt;</code></pre>
+
+	<h3 id="h3-1">Child</h3>
+	<pre><code class="language-javascript">function Listing({ items, active, handleUpdate }){
+	&#x3C;button onClick={() =&#x3E; handleUpdate(2)}&#x3E;Click Here&#x3C;/button&#x3E;
+}</code></pre>
+</div>
+
+<h2>Routing</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Installation</h3>
+	<p>npm install react-router-dom@6</p>
+
+	<h3 id="h3-1">Layout</h3>
+	<p>If you want to add layout page such as page with header menus applied to specific pages</p>
+	<pre><code class="language-javascript">import { Outlet } from "react-router-dom";
+import Header from "./components/header";
+
+const Layout = () =&#x3E; {
+	return &lt;&gt;
+		&lt;Header &#47;&gt;
+		&lt;Outlet &#47;&gt;
+	&lt;&#47;&gt;
+};
+export default Layout;</code></pre>
+
+	<h3 id="h3-1">Setup</h3>
+	<pre><code class="language-javascript">import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import Layout from "./layouts/index";
+import Home from "./views/home";
+import Invoices from "./views/invoices";
+import Products from "./views/Products";
+import Product from "./views/product";
+import NotFound from "./views/404.js";
+
+function App(){
+	return (
+		&lt;BrowserRouter>
+			&lt;Routes>
+				&lt;Route path="/" element={&lt;Layout />}>
+					&lt;Route index element={&lt;Home />} />
+					&lt;Route path="invoices" element={&lt;Invoices />} />
+					&lt;Route path="products" element={&lt;Products />} />
+					&lt;Route path="products/:productId" element={&lt;Product />} />
+				&lt;/Route>
+				&lt;Route path="*" element={&lt;NotFound />} />
+			&lt;/Routes>
+		&lt;/BrowserRouter>
+	)
+}
+</code></pre>
+
+	<h3 id="h3-1">Accessing URL Parameters</h3>
+	<pre><code class="language-javascript">import { useParams } from 'react-router-dom';
+function SingleProduct(){
+	const { productId } = useParams();
+}
+	</code></pre>
+</div>
+
+
+
+
+
+
+<!--Last part-->
+
+<h2>Redux Toolkit</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Installation</h3>
+	<p>npm install --save react-redux @reduxjs/toolkit</p>
+
+	<h3 id="h3-1">Store</h3>
+	<p>src/store/index.js</p>
+	<pre><code class="language-javascript">import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
+import user from './user';
+
+
+const reducer = combineReducers({
+	user,
+});
+const store = configureStore({
+	reducer,
+});
+export default store;</code></pre>
+
+	<p>index.js</p>
+	<pre><code class="language-javascript">import { Provider } from 'react-redux';
+import store from './store';
+ReactDOM.render(
+	&lt;Provider store={store}>
+		&lt;App />
+	&lt;/Provider>,
+	document.getElementById('root');
+)</code></pre>
+
+	<h3 id="h3-1">Slice/Reducers/Actions</h3>
+	<p>src/store/modules/user.js</p>
+	<pre><code class="language-javascript">import { createSlice } from '@reduxjs/toolkit';
+
+// Slice
+const slice = createSlice({
+	name: 'userModule',
+	initialState: {
+		user: null,
+	},
+	reducers: {
+		LOGIN_SUCCESS: (state, action) => {
+			state.user = action.payload;
+		},
+		LOGOUT_SUCCESS: (state, action) =>  {
+			state.user = null;
+		},
+	},
+});
+
+export default slice.reducer;
+
+// Actions
+const { LOGIN_SUCCESS, LOGOUT_SUCCESS } = slice.actions
+export const login = ({ username, password }) => async dispatch => {
+	try {
+		// const res = await api.post('/api/auth/login/', { username, password });
+		dispatch(LOGIN_SUCCESS({username}));
+	} catch (e) {
+		return console.error(e.message);
+	}
+}
+export const logout = () => async dispatch => {
+	try {
+		// const res = await api.post('/api/auth/logout/');
+		return dispatch(LOGOUT_SUCCESS());
+	} catch (e) {
+		return console.error(e.message);
+	}
+}</code></pre>
+
+	<h3 id="h3-1">Get Data</h3>
+	<pre><code class="language-javascript">import { useSelector } from 'react-redux';
+
+const { user } = useSelector(state => state.userModule);</code></pre>
+
+	<h3 id="h3-1">Call Function</h3>
+	<pre><code class="language-javascript">import { useDispatch } from 'react-redux';
+import { login, logout } from './store/module/user';
+
+const dispatch = useDispatch();
+
+onClick="() => { dispatch(login({ username: '', password: '' })) }"
+onClick="() => { dispatch(logout()) }"
+</code></pre>
+</div>
+
+
+
+<!--END write your content here-->
+</div>
+<p class="goTop"><a href="#top">TOP</a></p>
+</body>
+
+<script type="text/javascript" src="common/js/jquery.js"></script>
+<script type="text/javascript" src="common/js/script.js"></script>
+<script type="text/javascript" src="common/js/smooth_scrolling.js"></script>
+
+<script src="libs/tinymace/prism.js"></script>
+
+</html>
