@@ -17,10 +17,83 @@
 
 
 	
-<h2></h2>
+<h2>react-app-rewired</h2>
+<div class="divBlock">
+	<p>Import alias @</p>
+	<h3 id="h3-1">Install react-app-rewired</h3>
+	<pre><code class="language-javascript">npm install react-app-rewired --save-dev</code></pre>
+
+	<h3 id="h3-1">Config</h3>
+	<p>Create a <strong>config-overrides.js</strong> file in the root directory.</p>
+	<pre><code class="language-javascript">const { alias } = require('react-app-rewire-alias');
+
+module.exports = function override(config) {
+	alias({
+	'@': 'src/',
+	})(config);
+
+	return config;
+};</code></pre>
+
+	<h3 id="h3-1">Package</h3>
+	<p>Update <strong>package.json</strong></p>
+	<pre><code class="language-javascript">"scripts": {
+	"start": "react-app-rewired start",
+	"build": "react-app-rewired build",
+	"test": "react-app-rewired test",
+	"eject": "react-app-rewired eject"
+},</code></pre>
+
+	<h3 id="h3-1">Import</h3>
+	<pre><code class="language-javascript">import Account from '@/components/account';</code></pre>
+</div>
+
+<h2>Hooks</h2>
+<div class="divBlock">
+	<h3 id="h3-1">UseState</h3>
+	<pre><code class="language-javascript">import { useState } from 'react';
+const [text, setText] = useState('lorem ipsum');</code></pre>
+
+	<h3 id="h3-1">UseEffect</h3>
+	<pre><code class="language-javascript">import { useEffect } from 'react';
+
+// Run after every render / state update
+useEffect(() => {
+	console.log('Run after every render / state update');
+});
+
+// Run only in inital render / mounted
+useEffect(() => {
+	console.log('Run only in inital render / mounted');
+}, []);
+
+// Run only when specific state is change
+const [text, setText] = useState('lorem ipsum');
+useEffect(() => {
+	console.log('Run only when specific state is change');
+}, [text]);</code></pre>
+
+	<h3 id="h3-1">useRef</h3>
+	<pre><code class="language-javascript">import { useRef } from 'react';
+
+// Accessing dom elements
+const inputElement = useRef();
+...
+&lt;input type="text" ref={inputElement} />
+...
+inputElement.current.value</code></pre>
+</div>
+
+<h2>Forms</h2>
 <div class="divBlock">
 	<h3 id="h3-1"></h3>
-	<pre><code class="language-javascript"></code></pre>
+	<pre><code class="language-javascript">const [fname, setFName] = useState('');
+const [email, setEmail] = useState('');
+
+&lt;input type="text" name="fname" value={fname} onChange={(e) &equals;> setFName(e.target.value) }/>
+&lt;input type="text" name="email" value={email} onChange={(e) &equals;> setEmail(e.target.value) }/>
+
+	</code></pre>
 </div>
 
 <h2></h2>
@@ -28,14 +101,6 @@
 	<h3 id="h3-1"></h3>
 	<pre><code class="language-javascript"></code></pre>
 </div>
-
-<h2></h2>
-<div class="divBlock">
-	<h3 id="h3-1"></h3>
-	<pre><code class="language-javascript"></code></pre>
-</div>
-
-
 
 <!--END Write content here-->
 </div>
