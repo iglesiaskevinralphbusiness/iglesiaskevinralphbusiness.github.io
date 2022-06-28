@@ -86,15 +86,80 @@ inputElement.current.value</code></pre>
 
 <h2>Forms</h2>
 <div class="divBlock">
-	<h3 id="h3-1"></h3>
+	<h3 id="h3-1">Model</h3>
 	<pre><code class="language-javascript">const [fname, setFName] = useState('');
 const [email, setEmail] = useState('');
 
 &lt;input type="text" name="fname" value={fname} onChange={(e) &equals;> setFName(e.target.value) }/>
-&lt;input type="text" name="email" value={email} onChange={(e) &equals;> setEmail(e.target.value) }/>
-
-	</code></pre>
+&lt;input type="text" name="email" value={email} onChange={(e) &equals;> setEmail(e.target.value) }/></code></pre>
 </div>
+
+
+<h2>Axios</h2>
+<div class="divBlock">
+	<p>npm install axios</p>
+
+	<h3 id="h3-1">Setup Instance</h3>
+	<p>config/axios.config.js</p>
+	<pre><code class="language-javascript">import axios from 'axios';
+
+const axiosConfig = axios.create({
+	baseURL: 'https://course-api.com/',
+	timeout: 20000,
+	headers: {
+		Accept: 'application/json'
+	}
+});
+
+// request interceptor
+HTTP.interceptors.request.use(
+    (config) => config,
+    (err) => Promise.reject(err)
+);
+
+// response interceptor
+HTTP.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error && !error.response) {
+            HTTP.request(error.config);
+        } else {
+            const { status } = error.response;
+            if (status === 401) {
+                console.log('You are not autorize to access this page!');
+            } else if (status === 404) {
+                console.log('404 Api request not found!');
+            }
+
+            return Promise.reject(error.response);
+        }
+    }
+);
+
+export const HTTP = axios.create(axiosConfig);</code></pre>
+
+	<h3 id="h3-1">Setup Services</h3>
+	<p>services/index.js</p>
+	<pre><code class="language-javascript">import { HTTP } from '../config/axios-config';
+
+export const getRecipes = () => HTTP.get('/recipes/');
+export const getRecipe = (id) => HTTP.get('/recipes/' + id);
+export const addRecipe = (params) => HTTP.post('/recipes/', params);
+export const updateRecipe = (id, params) => HTTP.put('/recipes/' + id, params);
+export const deleteRecipe = (id) => HTTP.delete('/recipes/' + id);</code></pre>
+
+	<h3 id="h3-1">Call Function Request</h3>
+	<p>views/home.js</p>
+	<pre><code class="language-javascript">import { getRecipe, addRecipe, updateRecipe } from '../services/services';
+
+getRecipe(id).then((res) => {
+	console.log(res);
+}).catch((error) => {
+	console.log(error);
+});</code></pre>
+
+</div>
+
 
 <h2></h2>
 <div class="divBlock">
