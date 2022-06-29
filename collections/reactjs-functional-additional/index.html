@@ -94,6 +94,34 @@ const [email, setEmail] = useState('');
 &lt;input type="text" name="email" value={email} onChange={(e) &equals;> setEmail(e.target.value) }/></code></pre>
 </div>
 
+<h2>Prop Types</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Using prop types</h3>
+	<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+const Product = ({ image, name, price }) =>{
+	...
+}
+
+Product.propTypes = {
+	image: PropTypes.object.isRequired,
+	name: PropTypes.string.isRequired,
+	price: PropTypes.number.isRequired,
+}
+
+Product.defaultProps = { // it uses as default values when prop is empty
+	name: 'default name',
+	price: 0,
+	image: {
+		url: 'http://sameple.com/sample.png'
+	}
+}
+
+export default Product;
+	</code></pre>
+</div>
+
+
 
 <h2>Axios</h2>
 <div class="divBlock">
