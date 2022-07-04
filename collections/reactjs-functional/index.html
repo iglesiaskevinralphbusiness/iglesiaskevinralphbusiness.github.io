@@ -17,7 +17,36 @@
 <h1>React JS Functional</h1>
 
 	
+<h2>react-app-rewired</h2>
+<div class="divBlock">
+	<p>Import alias @</p>
+	<h3 id="h3-1">Install react-app-rewired</h3>
+	<pre><code class="language-javascript">npm install react-app-rewired --save-dev</code></pre>
 
+	<h3 id="h3-1">Config</h3>
+	<p>Create a <strong>config-overrides.js</strong> file in the root directory.</p>
+	<pre><code class="language-javascript">const { alias } = require('react-app-rewire-alias');
+
+module.exports = function override(config) {
+	alias({
+	'@': 'src/',
+	})(config);
+
+	return config;
+};</code></pre>
+
+	<h3 id="h3-1">Package</h3>
+	<p>Update <strong>package.json</strong></p>
+	<pre><code class="language-javascript">"scripts": {
+	"start": "react-app-rewired start",
+	"build": "react-app-rewired build",
+	"test": "react-app-rewired test",
+	"eject": "react-app-rewired eject"
+},</code></pre>
+
+	<h3 id="h3-1">Import</h3>
+	<pre><code class="language-javascript">import Account from '@/components/account';</code></pre>
+</div>
 
 <h2>Structure</h2>
 <div class="divBlock">
@@ -104,9 +133,143 @@ function SingleProduct(){
 	</code></pre>
 </div>
 
+<h2>Hooks</h2>
+<div class="divBlock">
+	<h3 id="h3-1">UseState</h3>
+	<pre><code class="language-javascript">import { useState } from 'react';
+const [text, setText] = useState('lorem ipsum');</code></pre>
 
+	<h3 id="h3-1">UseEffect</h3>
+	<pre><code class="language-javascript">import { useEffect } from 'react';
 
+// Run after every render / state update
+useEffect(() => {
+	console.log('Run after every render / state update');
+});
 
+// Run only in inital render / mounted
+useEffect(() => {
+	console.log('Run only in inital render / mounted');
+}, []);
+
+// Run only when specific state is change
+const [text, setText] = useState('lorem ipsum');
+useEffect(() => {
+	console.log('Run only when specific state is change');
+}, [text]);</code></pre>
+
+	<h3 id="h3-1">useRef</h3>
+	<pre><code class="language-javascript">import { useRef } from 'react';
+
+// Accessing dom elements
+const inputElement = useRef();
+...
+&lt;input type="text" ref={inputElement} />
+...
+inputElement.current.value</code></pre>
+</div>
+
+<h2>Forms</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Model</h3>
+	<pre><code class="language-javascript">const [fname, setFName] = useState('');
+const [email, setEmail] = useState('');
+
+&lt;input type="text" name="fname" value={fname} onChange={(e) &equals;> setFName(e.target.value) }/>
+&lt;input type="text" name="email" value={email} onChange={(e) &equals;> setEmail(e.target.value) }/></code></pre>
+</div>
+
+<h2>Prop Types</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Using prop types</h3>
+	<pre><code class="language-javascript">import PropTypes from 'prop-types';
+
+const Product = ({ image, name, price }) =>{
+	...
+}
+
+Product.propTypes = {
+	image: PropTypes.object.isRequired,
+	name: PropTypes.string.isRequired,
+	price: PropTypes.number.isRequired,
+}
+
+Product.defaultProps = { // it uses as default values when prop is empty
+	name: 'default name',
+	price: 0,
+	image: {
+		url: 'http://sameple.com/sample.png'
+	}
+}
+
+export default Product;
+	</code></pre>
+</div>
+
+<h2>Axios</h2>
+<div class="divBlock">
+	<p>npm install axios</p>
+
+	<h3 id="h3-1">Setup Instance</h3>
+	<p>config/axios.config.js</p>
+	<pre><code class="language-javascript">import axios from 'axios';
+
+const axiosConfig = axios.create({
+	baseURL: 'https://course-api.com/',
+	timeout: 20000,
+	headers: {
+		Accept: 'application/json'
+	}
+});
+
+// request interceptor
+HTTP.interceptors.request.use(
+    (config) => config,
+    (err) => Promise.reject(err)
+);
+
+// response interceptor
+HTTP.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error && !error.response) {
+            HTTP.request(error.config);
+        } else {
+            const { status } = error.response;
+            if (status === 401) {
+                console.log('You are not autorize to access this page!');
+            } else if (status === 404) {
+                console.log('404 Api request not found!');
+            }
+
+            return Promise.reject(error.response);
+        }
+    }
+);
+
+export const HTTP = axios.create(axiosConfig);</code></pre>
+
+	<h3 id="h3-1">Setup Services</h3>
+	<p>services/index.js</p>
+	<pre><code class="language-javascript">import { HTTP } from '../config/axios-config';
+
+export const getRecipes = () => HTTP.get('/recipes/');
+export const getRecipe = (id) => HTTP.get('/recipes/' + id);
+export const addRecipe = (params) => HTTP.post('/recipes/', params);
+export const updateRecipe = (id, params) => HTTP.put('/recipes/' + id, params);
+export const deleteRecipe = (id) => HTTP.delete('/recipes/' + id);</code></pre>
+
+	<h3 id="h3-1">Call Function Request</h3>
+	<p>views/home.js</p>
+	<pre><code class="language-javascript">import { getRecipe, addRecipe, updateRecipe } from '../services/services';
+
+getRecipe(id).then((res) => {
+	console.log(res);
+}).catch((error) => {
+	console.log(error);
+});</code></pre>
+
+</div>
 
 
 <!--Last part-->
