@@ -359,6 +359,79 @@ const dispatch = useDispatch();
 onClick="() => { dispatch(login({ username: '', password: '' })) }"
 onClick="() => { dispatch(logout()) }"
 </code></pre>
+
+	<h3 id="h3-1">Async Thunk</h3>
+	<p>src/store/modules/cart.js</p>
+	<pre><code class="language-javascript">import { createAsyncThunk } from '@reduxjs/toolkit';
+		
+const initialState = {
+	items: [],
+	isLoading: true
+}
+
+const cartSlice = createSlice({
+	name: 'cart',
+	initialState,
+	reduces: {
+		...
+	},
+	extraReducers: {
+		[getCartItems.pending]: (state) => {
+			state.isLoading = true;
+		},
+		[getCartItems.fulfilled]: (state, action) => {
+			state.isLoading = true;
+			state.items = action.payload;
+		},
+		[getCartItems.rejected]: (state) => {
+			state.isLoading = false;
+		},
+	}
+});
+
+// Async Thunks
+export const getCartItems = createAsyncThunk('cart/getCartItems', ()=> {
+	return fetch(url)
+		.then((resp) => resp.json())
+		.catch((error) => console.log(err));
+});</code></pre>
+
+	<p>src/components/cart.js</p>
+	<pre><code class="language-javascript">import { useDispatch } from 'react-redux';
+import { getCartItems } from './store/module/cart';
+
+
+const dispatch = useDispatch();
+
+useEffect(() => {
+	dispatch(getCartItems());
+});</code></pre>
+
+
+	<h3 id="h3-1">Axios Async Thunk</h3>
+	<p>npm install axios</p><br>
+
+	<p>src/store/modules/cart.js</p>
+	<pre><code class="language-javascript">import axios from 'axios';
+
+export const  getCartItems = createAsyncThunk('cart/getCartItems', async (thunkAPI) => {
+	// thunkAPI is function enable to get state, dispatch, ect. try to console log the thunkAPI varaible to see.
+	// can add function parameter before thunkAPI (ex. id, thunkAPI).
+	try {
+		const resp = await axios(url);
+		return resp.data;
+	} catch (error) {
+		return thunkAPI.rejectWithValue('something went wrong');
+	}
+});
+
+
+...
+[getCartItems.rejected]: (state, action) => {
+	console.log(action);
+	state.isLoading = false;
+},
+...</code></pre>
 </div>
 
 

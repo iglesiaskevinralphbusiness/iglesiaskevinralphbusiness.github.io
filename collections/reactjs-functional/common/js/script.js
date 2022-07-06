@@ -2,7 +2,7 @@ $(function () {
 	//add sidebar
 	$("body").prepend("<div class='sidebar'><ul class='side-items'></ul><a class='btn-sidebar' href=''>&gt;</a></div>");
 	$(".content").append(
-		"<div class='footer'><p>2019 &copy;&nbsp; <a href='http://iglesiaskevinralphbusiness.github.io' target='blank'>ralph kevin</a></p></div>"
+		"<div class='footer'><p>2022 &copy;&nbsp; <a href='http://iglesiaskevinralphbusiness.github.io' target='blank'>ralph kevin</a></p></div>"
 	);
 
 	//set headings to sidebar
