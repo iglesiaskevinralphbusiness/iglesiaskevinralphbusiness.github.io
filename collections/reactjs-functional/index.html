@@ -271,9 +271,6 @@ getRecipe(id).then((res) => {
 
 </div>
 
-
-<!--Last part-->
-
 <h2>Redux Toolkit</h2>
 <div class="divBlock">
 	<h3 id="h3-1">Installation</h3>
@@ -434,6 +431,33 @@ export const  getCartItems = createAsyncThunk('cart/getCartItems', async (thunkA
 ...</code></pre>
 </div>
 
+<h2>Typescript</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Installation</h3>
+	<p>npm install --save typescript @types/node @types/react @types/react-dom @types/jest</p>
+
+	<h3 id="h3-1">Describing Data</h3>
+	<p>Interface</p>
+	<pre><code class="language-javascript">interface Account {
+	id: number
+	displayName: string
+	version: 1
+}
+	
+function welcome(user: Account) {
+	console.log(user.id)
+}</code></pre>
+	<p>Type</p>
+	<pre><code class="language-javascript">type Result = "pass" | "fail"
+ 
+function verify(result: Result) {
+	if (result === "pass") {
+		console.log("Passed")
+	} else {
+		console.log("Failed")
+	}
+}</code></pre>
+</div>
 
 
 <!--END write your content here-->
