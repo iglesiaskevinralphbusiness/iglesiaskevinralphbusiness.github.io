@@ -1,0 +1,107 @@
+<html>
+
+<head>
+	<title>React JS - Functional</title>
+	<link href="common/css/reset.css" rel="stylesheet" />
+	<link href="common/css/style.css" rel="stylesheet" />
+	<link href="common/css/media.css" rel="stylesheet" />
+	
+	<link rel="stylesheet" href="libs/tinymace/prism.css">
+	
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+</head>
+
+<body>
+<div class="content" id="top">
+<!--Write your content here-->
+<h1>Next JS</h1>
+
+<h2>Install</h2>
+<div class="divBlock">
+	<h3 id="h3-1">By react app</h3>
+	<p>npm create react-app app-name --template next</p>
+
+	<h3 id="h3-1">By next</h3>
+	<p>npx create-next-app</p>
+	<p>npm install</p>
+	<p>npm run dev</p>
+</div>
+
+<h2>Pages routing</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Filename</h3>
+	<p>/ → pages/index.js</p>
+	<p>/about → pages/about.js</p>
+	<p>/blog/hello-world → pages/blog/[identifierId].js</p>
+	
+	<h3 id="h3-1">Folder file name as identifier</h3>
+	<p>/any-title  →  pages/[identifierId]/index.js</p>
+	<p>/any-title/view  →  pages/[identifierId]/view.js</p>
+</div>
+
+<h2>Link</h2>
+<div class="divBlock">
+	<pre><code class="language-javascript">import Link from 'next/link';
+
+&lt;Link href="/">Home&lt;/Link></code></pre>
+</div>
+
+<h2>Layout</h2>
+<div class="divBlock">
+	<h3 id="h3-1">/components/layout.js</h3>
+	<pre><code class="language-javascript">function Layout(props){
+	return (
+		&lt;div>
+			&lt;nav>
+				&lt;ul>
+					&lt;li>Home&lt;/li>
+					&lt;li>Account&lt;/li>
+					&lt;li>Contact us&lt;/li>
+				&lt;/ul>
+			&lt;/nav>
+			&lt;main>{props.children}&lt;/main>
+		&lt;/div>
+	)
+}</code></pre>
+
+	<h3 id="h3-1">global -> /pages/_app.js</h3>
+	<pre><code class="language-javascript">import Layout from 'layout';
+		
+function MyApp({ Component, pageProps }) {
+	return &lt;Layout>
+		&lt;Component {...pageProps} />
+	&lt;/Layout>;
+}</code></pre>
+
+
+	<h3 id="h3-1">or using individual page</h3>
+	<pre><code class="language-javascript">import Layout from 'layout';
+
+return {
+	&lt;Layout>
+		&lt;div>
+			...
+		&lt;/div>
+	&lt;/Layout>
+}</code></pre>
+</div>
+
+<h2></h2>
+<div class="divBlock">
+	<h3 id="h3-1"></h3>
+	<pre><code class="language-javascript"></code></pre>
+</div>
+
+
+<!--END write your content here-->
+</div>
+<p class="goTop"><a href="#top">TOP</a></p>
+</body>
+
+<script type="text/javascript" src="common/js/jquery.js"></script>
+<script type="text/javascript" src="common/js/script.js"></script>
+<script type="text/javascript" src="common/js/smooth_scrolling.js"></script>
+
+<script src="libs/tinymace/prism.js"></script>
+
+</html>
