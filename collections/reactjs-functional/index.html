@@ -194,6 +194,19 @@ const inputElement = useRef();
 &lt;input type="text" ref={inputElement} />
 ...
 inputElement.current.value</code></pre>
+
+	<h3 id="h3-1">UseCallback</h3>
+	<p>Advantages (Load the state to updated value, call the function from preventing re-rendering needlesly)</p>
+	<pre><code class="language-javascript">import { useCallback } from 'react';
+
+const [todos, setTodos] = useState([]);
+
+const addTodo = useCallback(() => {
+	...
+}, [todos]);
+
+&lt;button onClick={addTodo}>+</button></code></pre>
+
 </div>
 
 <h2>Forms</h2>
