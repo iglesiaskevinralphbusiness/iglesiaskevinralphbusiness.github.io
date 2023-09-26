@@ -86,6 +86,49 @@ return {
 }</code></pre>
 </div>
 
+<h2>Pre-rendering Functions</h2>
+<div class="divBlock">
+	<h3 id="h3-1">getStaticProps</h3>
+	<p>source: <a href="https://betterprogramming.pub/how-to-choose-data-fetching-strategies-in-nextjs-dadabf45e562">https://betterprogramming.pub/how-to-choose-data-fetching-strategies-in-nextjs-dadabf45e562</a></p>
+	<p>To populate the data from api, let's say list of products</p>
+	<pre><code class="language-javascript">export async function getStaticProps(context: GetStaticPropsContext) {
+	const products = await getProducts (); //getProducts will be the services for axios
+	return {
+		props: {
+			products
+		}
+	};
+}</code></pre>
+	<p>To set a refresh interval api request, add the revalidate</p>
+	<pre><code class="language-javascript">export async function getStaticProps(context: GetStaticPropsContext) {
+	const products = await getProducts();
+	return {
+		props: {
+			products,
+		},
+		revalidate: 10, //every 10 seconds
+	};
+}</code></pre>
+
+	<h3 id="h3-1">getStaticPaths</h3>
+	<p>source: <a href="https://medium.com/@remoteupskill/understanding-getstaticpaths-in-next-js-in-under-5-mins-df0e09abd95e">https://medium.com/@remoteupskill/understanding-getstaticpaths-in-next-js-in-under-5-mins-df0e09abd95e</a></p>
+	<p>We use getStaticPaths to define a list of path so Next.js can pre-render all the paths at build time.</p>
+	<pre><code class="language-javascript">// Let's just say we have the path `/posts/1` and `/posts/2`
+export async function getStaticPaths() {
+	return {
+		paths: [{ params: { id: '1' } }, { params: { id: '2' } }],
+		fallback: false, // can also be true or 'blocking'
+	}
+}</code></pre>
+
+
+	<p>If you call an api for products and you want to get the details of all products by there ID using api, thats where you can use getStaticPaths.</p>
+	<pre><code class="language-javascript"></code></pre>
+
+	<h3 id="h3-1">getServerSideProps</h3>
+	<pre><code class="language-javascript"></code></pre>
+</div>
+
 <h2></h2>
 <div class="divBlock">
 	<h3 id="h3-1"></h3>
