@@ -165,7 +165,17 @@ export default ProductDetails</code></pre>
 	<pre><code class="language-javascript"></code></pre>
 
 	<h3 id="h3-1">getServerSideProps</h3>
-	<pre><code class="language-javascript"></code></pre>
+	<p>Ginagamit naman ito kapag meron kang gusto munang ivalidate sa page.</p>
+	<p>Remember one thing: If you use getServerSideProps, it will not pre-generate any page like getStaticPaths. Instead, it will run the code inside the getServerSideProps every time the page is requested.</p>
+	<pre><code class="language-javascript">export async function getServerSideProps(context: GetServerSidePropsContext) {
+	const {params} = context
+
+	if(!params?.id){
+		return {
+			props: {}
+		}
+	}
+}</code></pre>
 </div>
 
 <h2></h2>
