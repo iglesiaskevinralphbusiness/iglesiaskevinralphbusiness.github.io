@@ -444,6 +444,87 @@ export const  getCartItems = createAsyncThunk('cart/getCartItems', async (thunkA
 ...</code></pre>
 </div>
 
+<h2>Redux Toolkit Query</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Store</h3>
+	<p>In your store, add the api service</p>
+	<pre><code class="language-javascript">
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
+import { usersApi } from './usersApi'; // You will create an API slice
+import user from './user';
+
+const reducer = combineReducers({
+	user,
+	[usersApi.reducerPath]: usersApi.reducer, // Add API slice reducer
+});
+
+const store = configureStore({
+	reducer,
+	middleware: (getDefaultMiddleware) =>
+	getDefaultMiddleware().concat(usersApi.middleware), // Add API middleware
+});
+
+export default store;</code></pre>
+
+	<h3 id="h3-1">API Service</h3>
+	<p>Create your api endpoint usersApi.js</p>
+	<pre><code class="language-javascript">import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+const usersApi = createApi({
+	baseQuery: fetchBaseQuery({ baseUrl: "/users" }),
+	endpoints: (builder) => ({
+		fetchUser: builder.query({
+			query: (id) => `user/${id}`,
+		}),
+		createUser: builder.mutation({
+			query: (user) => ({
+				url: "user",
+				method: "POST",
+				body: user,
+			}),
+		}),
+	}),
+});
+
+export const { queryGetUsers, queryCreateUser } = usersApi;</code></pre>
+
+	<h3 id="h3-1">Get Data</h3>
+	<pre><code class="language-javascript">import { queryGetUsers } from "./usersApi";
+
+const UserProfile = ({ userId }) => {
+	const { data, error, isLoading } = queryGetUsers(userId);
+  
+	if (isLoading) return &lt;p>Loading...&lt;/p>;
+	if (error) return &lt;p>Error: {error.message}&lt;/p>;
+  
+	return (
+		&lt;div>
+			&lt;h1>{data.name}</h1>
+			&lt;p>Email: {data.email}</p>
+		&lt;/div>
+	);
+};</code></pre>
+
+	<h3 id="h3-1">Call Function</h3>
+	<pre><code class="language-javascript">import { queryCreateUser } from "./usersApi";
+
+const CreateUserForm = () => {
+	const [createUser, { isLoading }] = queryCreateUser();
+
+	const handleSubmit = async (user) => {
+		try {
+			await createUser(user).unwrap();
+			alert("User created successfully!");
+		} catch (error) {
+			alert(`Error: ${error.message}`);
+		}
+	};
+
+	// Render form components and handle form submission with handleSubmit
+};</code></pre>
+</div>
+
 <h2>Typescript</h2>
 <div class="divBlock">
 	<h3 id="h3-1">Installation</h3>
