@@ -135,6 +135,16 @@
     .project5 .project5-colR {
         height: 50vh;
     }
+    .project9 .project9-colL,
+    .project9 .project9-colR {
+        float: none;
+        width: 100%;
+        height: unset;
+        margin-bottom: unset;
+    }
+    .project9 .border {
+        height: unset;
+    }
     .layer-timeline .layer-intro-contents {
         padding-left: 60px;
         padding-right: 0;

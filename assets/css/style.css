@@ -724,6 +724,36 @@ main {
 }
 
 
+/* project 5 */
+.project9 {
+	overflow: hidden;
+}
+.project9 .project9-colL {
+	float: left;
+	width: 45%;
+	height: 90vh;
+	margin-bottom: 150px;
+	overflow: hidden;
+}
+.project9 .project9-colR {
+	float: right;
+	width: 45%;
+	height: 90vh;
+	margin-bottom: 150px;
+	overflow: hidden;
+}
+.project9 .border {
+	height: 83%;
+	background-color: #fff;
+	overflow: hidden;
+}
+.project9 .border img {
+	width: 100%;
+}
+.project9 .project-details .desc {
+	max-width: 55%;
+}
+
 
 
 
