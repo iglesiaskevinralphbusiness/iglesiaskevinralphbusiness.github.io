@@ -1,0 +1,168 @@
+<html>
+
+<head>
+	<title>React JS - Functional</title>
+	<link href="common/css/reset.css" rel="stylesheet" />
+	<link href="common/css/style.css" rel="stylesheet" />
+	<link href="common/css/media.css" rel="stylesheet" />
+	
+	<link rel="stylesheet" href="libs/tinymace/prism.css">
+	
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+</head>
+
+<body>
+<div class="content" id="top">
+<!--Write your content here-->
+<h1>MongDB to NextJS</h1>
+
+<h2>Intallation</h2>
+<div class="divBlock">
+	<p>Step 1: download and install the mongodb server in your computer (<a href="">https://www.mongodb.com/try/download/community</a>)</p>
+	<p>Step 2: to Run the server, type in your terminal <b>mongod --port 27017</b> or Run in Mongodb Compass GUI App</p>
+	<p>Step 2: <b>npm install mongodb</b> in your nextjs App</p>
+</div>
+
+<h2>Create DB Connection</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Create Config Function</h3>
+	<p>mongo/config/mongo.js</p>
+	<pre><code class="language-javascript">import { MongoClient } from 'mongodb';
+
+const uri = 'mongodb://localhost:27017'; // Update with your MongoDB connection string
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+let db;
+
+export async function connectDB() {
+	if (!client.isConnected()) await client.connect();
+	db = client.db('your-database-name'); //Update with your database name
+}
+
+export async function getDB() {
+	if (!db) await connectDB();
+	return db;
+}
+
+// This function will be called before every API route handler
+export async function withDB(handler) {
+	try {
+		await connectDB();
+		return await handler();
+	} finally {
+		await client.close();
+	}
+}</code></pre>
+
+	<h3 id="h3-1">API Implementation</h3>
+	<pre><code class="language-javascript">import { withDB } from '../../mongo';
+
+async function handler(req, res) {
+	const db = await getDB();
+    
+	// Your logic here
+}
+
+export default withDB(handler);</code></pre>
+</div>
+
+<h2>Modules</h2>
+<div class="divBlock">
+	<p>Let's say you have the users table and you want to implement as organize.</p>
+
+	<h3 id="h3-1">Create User Module</h3>
+	<p>/mongo/modules/user.js</p>
+	<pre><code class="language-javascript">import { getDB } from '../config/mongo';
+
+async function getUsers() {
+	const db = await getDB();
+	return await db.collection('users').find().toArray();
+}
+
+async function createUser(user) {
+	const db = await getDB();
+	await db.collection('users').insertOne(user);
+}
+
+export { getUsers, createUser };</code></pre>
+
+
+	<h3 id="h3-1">Implement Module to Next API</h3>
+	<pre><code class="language-javascript">import { getUsers, createUser } from '../../users';
+
+async function handler(req, res) {
+	if (req.method === 'GET') {
+		const users = await getUsers();
+		res.status(200).json(users);
+	} else if (req.method === 'POST') {
+		const { name, email } = req.body;
+
+		try {
+			await createUser({ name, email });
+			res.status(201).json({ message: 'User created successfully' });
+		} catch (error) {
+			console.error('Error creating user:', error);
+			res.status(500).json({ message: 'Error creating user' });
+		}
+	}
+	...
+}
+
+export default handler;</code></pre>
+</div>
+
+<h2>Select</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Select FindOne</h3>
+	<pre><code class="language-javascript">db.collection('users').findOne({ _id: userid });</code></pre>
+
+	<h3 id="h3-1">Select Find Multiple</h3>
+	<pre><code class="language-javascript">db.collection('users').find({ username: { $regex: `.*${username}.*`, $options: 'i' } }).toArray();</code></pre>
+</div>
+
+
+<h2>Insert</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Insert One</h3>
+	<pre><code class="language-javascript">db.collection('users').insertOne(user);</code></pre>
+
+	<h3 id="h3-1">Inser Many</h3>
+	<pre><code class="language-javascript">db.collection('users').insertMany(users);</code></pre>
+</div>
+
+<h2>Update</h2>
+<div class="divBlock">
+	<p>Let' say we have newData that contains as this object:</p>
+	<pre><code class="language-javascript">newData = {
+	name: 'kevin',
+	age: 32,
+	gender: 'male',
+}</code></pre>
+	<pre><code class="language-javascript">const updateFields = {}; //make sure to specify the fields manually to avoid updating all fields that the array provided
+if (newData.name) updateFields.name = newData.name;
+if (newData.age) updateFields.age = newData.age;
+
+await db.collection('users').updateOne({ _id: userId }, { $set: updateFields });</code></pre>
+</div>
+
+
+<!---->
+
+<h2></h2>
+<div class="divBlock">
+	<h3 id="h3-1"></h3>
+	<pre><code class="language-javascript"></code></pre>
+</div>
+
+<!--END write your content here-->
+</div>
+<p class="goTop"><a href="#top">TOP</a></p>
+</body>
+
+<script type="text/javascript" src="common/js/jquery.js"></script>
+<script type="text/javascript" src="common/js/script.js"></script>
+<script type="text/javascript" src="common/js/smooth_scrolling.js"></script>
+
+<script src="libs/tinymace/prism.js"></script>
+
+</html>

@@ -466,6 +466,39 @@ export default async function handler(req, res) {
 </div>
 
 
+<h2>CORS (Cross-Origin Resource Sharing)</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Middleware for API</h3>
+	<p>middleware/cors.js</p>
+	<pre><code class="language-javascript">export default function cors(req, res, next) {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+	res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+	if (req.method === 'OPTIONS') {
+		// Pre-flight request
+		res.status(200).end();
+		return;
+	}
+
+	next();
+}</code></pre>
+
+	<h3 id="h3-1">Implement middleware to API</h3>
+	<pre><code class="language-javascript">import cors from '../../middleware/cors';
+
+export default function handler(req, res) {
+	// Apply CORS middleware to the route
+	cors(req, res, () => {
+		// Your route logic goes here
+		res.status(200).json({ message: 'This is an example route' });
+	});
+}</code></pre>
+</div>
+
+
+
 <!--END write your content here-->
 </div>
 <p class="goTop"><a href="#top">TOP</a></p>
