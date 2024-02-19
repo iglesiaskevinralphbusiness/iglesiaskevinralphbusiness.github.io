@@ -183,10 +183,286 @@ export default ProductDetails</code></pre>
 	<p><a href="https://www.youtube.com/watch?v=quNLtK7hWYs">https://www.youtube.com/watch?v=quNLtK7hWYs</a></p>
 </div>
 
-<h2></h2>
+<h2>API</h2>
 <div class="divBlock">
-	<h3 id="h3-1"></h3>
-	<pre><code class="language-javascript"></code></pre>
+	<h3 id="h3-1">Get</h3>
+	<pre><code class="language-javascript">export default function handler(req, res) {
+	if (req.method === 'GET') {
+		// Your logic to fetch data goes here
+		const data = { message: 'This is a GET request' };
+		
+		// Return the fetched data as JSON response
+		res.status(200).json(data);
+	} else {
+		// Return 405 Method Not Allowed for non-GET requests
+		res.status(405).json({ message: 'Method Not Allowed' });
+	}
+}</code></pre>
+
+	<h3 id="h3-1">Post</h3>
+	<pre><code class="language-javascript">export default function handler(req, res) {
+	if (req.method === 'POST') {
+		// Retrieve data from the request body
+		const { name, email } = req.body;
+
+		// Your logic to process the POST data goes here
+		// For example, you could save the data to a database
+		
+		// Return a success message
+		const message = `Data received: Name - ${name}, Email - ${email}`;
+		res.status(200).json({ message });
+		//200: “Everything is OK.” This is the code that is delivered when a web page or resource acts exactly the way it's expected to.
+		//201: “Created.” The server has fulfilled the browser's request, and as a result, has created a new resource. That means for insert or update, use 201.
+	} else {
+		// Return 405 Method Not Allowed for non-POST requests
+		res.status(405).json({ message: 'Method Not Allowed' });
+	}
+}</code></pre>
+</div>
+
+<h2>API Token-Based Authentication</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Install JsonWebToken</h3>
+	<p>npm install jsonwebtoken</p>
+
+	<h3 id="h3-1">Middleware for API</h3>
+	<p><strong>middleware/auth.js</strong></p>
+	<pre><code class="language-javascript">import jwt from 'jsonwebtoken';
+
+export default function authMiddleware(req, res, next) {
+	// Extract token from request headers, cookies, or query parameters
+	const token = req.headers.authorization?.split(' ')[1]; // Assuming token is sent in the Authorization header
+
+	// Verify token
+	try {
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		req.user = decoded; // Attach user information to the request object
+		next();
+	} catch (error) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+}</code></pre>
+
+	<h3 id="h3-1">Implement Middleware in Login</h3>
+	<p>sample login user <strong>pages/api/login.js</strong></p>
+	<pre><code class="language-javascript">import jwt from 'jsonwebtoken';
+
+export default function handler(req, res) {
+	if (req.method !== 'POST') {
+		return res.status(405).json({ message: 'Method Not Allowed' });
+	}
+
+	// Validate user credentials (e.g., username and password)
+	const { username, password } = req.body;
+	if (isValidUserCredentials(username, password)) {
+		// Generate JWT token
+		const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+		// Return token to the client
+		res.status(200).json({ token });
+	} else {
+		res.status(401).json({ message: 'Invalid credentials' });
+	}
+}</code></pre>
+
+	<h3 id="h3-1">Implement Middleware in API</h3>
+	<p>sample get data <strong>pages/api/get-user.js</strong></p>
+	<pre><code class="language-javascript">import authMiddleware from '../../middleware/auth';
+
+export default function handler(req, res) {
+	if (req.method !== 'GET') {
+		return res.status(405).json({ message: 'Method Not Allowed' });
+	}
+
+	// Apply authentication middleware to protect the route
+	authMiddleware(req, res, () => {
+		// Access user information from req.user
+		const userId = req.user.userId;
+
+		// Perform actions based on user ID
+		// Example: Fetch user data from the database
+		const userData = fetchUserData(userId);
+
+		res.status(200).json(userData);
+	});
+}</code></pre>
+</div>
+
+<h2>API Rate Limit / Anti-spam</h2>
+<div class="divBlock">
+	<p>These middleware allow you to limit the number of requests a client can make to your API within a certain time frame.</p>
+	<p>With this setup, requests to the rateLimitedRoute API endpoint will be rate-limited to 100 requests per minute per IP address.<br>
+		If a client exceeds this limit, they will receive a "Too many requests" response with a <strong>status code of 429</strong> (Too Many Requests).</p>
+
+	<h3 id="h3-1">Install</h3>
+	<p>npm install express-rate-limit</p>
+
+	<h3 id="h3-1">Middleware for API</h3>
+	<p>middleware/rateLimit.js</p>
+	<pre><code class="language-javascript">import rateLimit from 'express-rate-limit';
+
+const limiter = rateLimit({
+	windowMs: 60 * 1000, // 1 minute
+	max: 100, // limit each IP to 100 requests per windowMs
+	message: 'Too many requests from this IP, please try again later'
+}); //status code is 429 (Too Many Requests).
+
+export default limiter;</code></pre>
+
+	<h3 id="h3-1">Implement Middleware in API</h3>
+	<pre><code class="language-javascript">import limiter from '../../middleware/rateLimit';
+
+export default function handler(req, res) {
+	// Apply rate limiting middleware to the route
+	limiter(req, res, () => {
+		// Your route logic goes here
+		res.status(200).json({ message: 'This is a rate-limited route' });
+	});
+}</code></pre>
+
+	<h3 id="h3-1">Implement both authentication and limiter</h3>
+	<pre><code class="language-javascript">import authMiddleware from '../../middleware/auth';
+		import limiter from '../../middleware/rateLimit';
+		
+export default function handler(req, res) {
+	// Apply rate limiting middleware to the route
+	limiter(req, res, () => {
+		// Apply authentication middleware to the route
+		authMiddleware(req, res, () => {
+			// Your route logic goes here
+			res.status(200).json({ message: 'This is a protected route' });
+		});
+	});
+}</code></pre>
+</div>
+
+<h2>API Validation</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Install</h3>
+	<p>npm install express-validator</p>
+
+	<h3 id="h3-1">Middleware for API</h3>
+	<pre><code class="language-javascript">import { validationResult } from 'express-validator';
+
+export default function validate(req, res, next) {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
+	}
+	next();
+}</code></pre>
+
+	<h3 id="h3-1">Implement Validation</h3>
+	<p>// pages/api/submitForm.js</p>
+	<pre><code class="language-javascript">import { body } from 'express-validator';
+import validate from '../../middleware/validate';
+
+export const formValidationRules = [
+	body('name').notEmpty().withMessage('Name is required'),
+	body('email').isEmail().withMessage('Email must be valid'),
+	body('age').isLength({ min: 1, max: 50 }).withMessage('Field must be between 2 and 50 characters'),
+	body('age').isInt().withMessage('Field must be an integer'),
+	body('male').isBoolean().withMessage('Field must be a boolean'),
+	body('url').isURL().withMessage('Field must be a valid URL'),
+	body('password').matches(/^[a-zA-Z0-9_]+$/).withMessage('Field must contain only letters, numbers, or underscores'),
+	body('date').isAfter('2022-01-01').withMessage('Field must be after 2022-01-01'),
+	body('hobies').isIn(['value1', 'value2', 'value3']).withMessage('Field must be one of value1, value2, value3'),
+	// Add more validation rules as needed
+];
+
+export default function handler(req, res) {
+	// Apply validation middleware with formValidationRules
+	validate(formValidationRules)(req, res, () => {
+		// Your route logic goes here
+		res.status(200).json({ message: 'Form submitted successfully' });
+	});
+}</code></pre>
+</div>
+
+<h2>Error Handling</h2>
+<div class="divBlock">
+	<h3 id="h3-1">API error handling</h3>
+	<p>middleware/errorHandler.js</p>
+	<pre><code class="language-javascript">export default function errorHandler(err, req, res, next) {
+	console.error('Error:', err.message);
+	res.status(500).json({ message: 'Internal Server Error' });
+}</code></pre>
+
+	<h3 id="h3-1">Implement API error handling</h3>
+	<p>pages/api/example.js</p>
+	<pre><code class="language-javascript">import errorHandler from '../../middleware/errorHandler';
+
+export default function handler(req, res) {
+	try {
+		// Your route logic goes here
+		throw new Error('Example error');
+	} catch (error) {
+		next(error); // Pass the error to the errorHandler middleware
+	}
+}</code></pre>
+
+	<h3 id="h3-1">Implement Pages error handling</h3>
+	<p>pages/_error.js</p>
+	<pre><code class="language-javascript">function Error({ statusCode }) {
+	return (
+		<p>
+			{statusCode
+				? `An error ${statusCode} occurred on the server`
+				: 'An error occurred on the client'}
+		</p>
+	);
+}
+
+Error.getInitialProps = ({ res, err }) => {
+	const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
+	return { statusCode };
+};
+
+export default Error;</code></pre>
+</div>
+
+<h2>API Pagination with mongodb</h2>
+<div class="divBlock">
+	<pre><code class="language-javascript">// pages/api/users.js
+
+import connectDB from '../../utils/dbConnect';
+import User from '../../models/User';
+
+export default async function handler(req, res) {
+	// Connect to MongoDB
+	await connectDB();
+
+	// Pagination parameters
+	const page = parseInt(req.query.page) || 1;
+	const pageSize = parseInt(req.query.pageSize) || 10;
+
+	try {
+		// Fetch total count of users (for calculating total pages)
+		const totalCount = await User.countDocuments();
+
+		// Calculate total pages based on total count and page size
+		const totalPages = Math.ceil(totalCount / pageSize);
+
+		// Fetch paginated users from MongoDB
+		const users = await User.find()
+			.skip((page - 1) * pageSize)
+			.limit(pageSize)
+			.exec();
+
+		// Return paginated data in the API response
+		res.status(200).json({
+			users,
+			pagination: {
+				page,
+				pageSize,
+				totalPages,
+				totalCount
+			}
+		});
+	} catch (error) {
+		res.status(500).json({ message: 'Internal Server Error' });
+	}
+}</code></pre>
 </div>
 
 
