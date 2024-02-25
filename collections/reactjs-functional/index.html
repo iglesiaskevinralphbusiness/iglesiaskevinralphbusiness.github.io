@@ -444,6 +444,60 @@ export const  getCartItems = createAsyncThunk('cart/getCartItems', async (thunkA
 ...</code></pre>
 </div>
 
+<h2>Redux Persist</h2>
+<div class="divBlock">
+	<p>Redux persist is use to let the state not be erase when browser is refreshed.</p>
+	<h3 id="h3-1">Store</h3>
+	<pre><code class="language-javascript">import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
+
+// Import your reducers
+import yourReducer from './yourReducer';
+
+const reducers = combineReducers({
+  // Add your reducers here
+  yourReducer,
+});
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  // Optionally, you can blacklist or whitelist specific reducers
+  // blacklist: ['reducerToExclude'],
+  // whitelist: ['reducerToPersist'],
+};
+
+const persistedReducer = persistReducer(persistConfig, reducers);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  // Optionally, you can add middleware, enhancers, etc.
+});
+
+export const persistor = persistStore(store);</code>
+	</pre>
+
+	<h3 id="h3-1">API Service</h3>
+	<p>index.js (is react), _app.js (in nextjs)</p>
+	<pre><code class="language-javascript">import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './persistConfig'; // Import store and persistor
+import App from './App';
+
+ReactDOM.render(
+  &lt;Provider store={store}>
+    &lt;PersistGate loading={null} persistor={persistor}>
+      &lt;App />
+    &lt;/PersistGate>
+  &lt;/Provider>,
+  document.getElementById('root')
+);</code></pre>
+</div>
+
 <h2>Redux Toolkit Query</h2>
 <div class="divBlock">
 	<h3 id="h3-1">Store</h3>
