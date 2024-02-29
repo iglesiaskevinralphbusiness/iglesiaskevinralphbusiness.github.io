@@ -443,14 +443,11 @@ export const  getCartItems = createAsyncThunk('cart/getCartItems', async (thunkA
 },
 ...</code></pre>
 
-	<h3 id="h3-1">Create Action</h3>
+	<h3 id="h3-1">Call dispatch from slice to another slice</h3>
 	<p>This is use when you want to call the dispatch action from slice to another slice</p>
 	<p>src/store/modules/user.js</p>
-	<pre><code class="language-javascript">import { createAction } from '@reduxjs/toolkit';
-...
-export const updateBalance = createAction('updateBalance', ({ coin, value }) => {
-	dispatch(UPDATE_BALANCE({ coin, value }));
-});</code></pre>
+	<pre><code class="language-javascript">//Actions
+export const updateBalance = ({ coin, value }) => async dispatch => { }</code></pre>
 	
 	<p>src/store/modules/balance.js</p>
 	<pre><code class="language-javascript">import { updateBalance } from './user';
@@ -459,6 +456,27 @@ dispatch(updateBalance({
 	coin: res.data.coin,
 	value: res.data.balance 
 }));</code></pre>
+
+	<h3 id="h3-1">Access store state from non-react file / Inject</h3>
+	<p>services.js (place you want to access the state)</p>
+	<pre><code class="language-javascript">// inject store
+let store;
+export const injectStoreServices = (_store) => {
+	store = _store;
+};
+
+// Access the current state of redux store
+const getUser = () => {
+	const state = store.getState();
+	const { user } = state.user;
+	return user;
+}</code></pre>
+
+	<p>index.js or _app.js</p>
+	<pre><code class="language-javascript">import store from "../store";
+	import { injectStoreServices } from '../services';
+
+	injectStoreServices(store);</code></pre>
 </div>
 
 <h2>Redux Persist</h2>
