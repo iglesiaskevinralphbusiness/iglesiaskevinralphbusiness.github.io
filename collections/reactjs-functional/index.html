@@ -442,6 +442,23 @@ export const  getCartItems = createAsyncThunk('cart/getCartItems', async (thunkA
 	state.isLoading = false;
 },
 ...</code></pre>
+
+	<h3 id="h3-1">Create Action</h3>
+	<p>This is use when you want to call the dispatch action from slice to another slice</p>
+	<p>src/store/modules/user.js</p>
+	<pre><code class="language-javascript">import { createAction } from '@reduxjs/toolkit';
+...
+export const updateBalance = createAction('updateBalance', ({ coin, value }) => {
+	dispatch(UPDATE_BALANCE({ coin, value }));
+});</code></pre>
+	
+	<p>src/store/modules/balance.js</p>
+	<pre><code class="language-javascript">import { updateBalance } from './user';
+...
+dispatch(updateBalance({
+	coin: res.data.coin,
+	value: res.data.balance 
+}));</code></pre>
 </div>
 
 <h2>Redux Persist</h2>
