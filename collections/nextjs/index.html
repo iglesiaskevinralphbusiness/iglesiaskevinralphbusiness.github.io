@@ -554,25 +554,28 @@ export default function handler(req, res) {
 	<h3 id="h3-1">Server Config For API</h3>
 	<p>/index.js</p>
 	<pre><code class="language-javascript">import { useEffect } from 'react';
-import io from 'socket.io-client';
-
-const Home = () => {
-	useEffect(() => {
-		const socket = io('http://localhost:3001'); // Adjust URL based on your server setup
-		socket.on('connect', () => {
-			console.log('Connected to WebSocket server');
-		});
-
-		// Clean up the socket connection
-		return () => {
-			socket.disconnect();
+		import io from 'socket.io-client';
+		
+		const YourComponent = () => {
+			useEffect(() => {
+				const socket = io('http://localhost:3001'); // Adjust URL based on your server setup
+		
+				// Listen for the 'objectItem' event emitted from the server
+				socket.on('objectItem', (data) => {
+					console.log('Received objectItem:', data);
+					// Handle the received data as needed
+				});
+		
+				// Clean up the socket connection
+				return () => {
+					socket.disconnect();
+				};
+			}, []);
+		
+			return <div>Your Component</div>;
 		};
-	}, []);
-
-	return <div>Home</div>;
-};
-
-export default Home;</code></pre>
+		
+		export default YourComponent;</code></pre>
 </div>
 
 <!--END write your content here-->
