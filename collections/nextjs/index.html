@@ -465,7 +465,6 @@ export default async function handler(req, res) {
 }</code></pre>
 </div>
 
-
 <h2>CORS (Cross-Origin Resource Sharing)</h2>
 <div class="divBlock">
 	<h3 id="h3-1">Middleware for API</h3>
@@ -497,7 +496,84 @@ export default function handler(req, res) {
 }</code></pre>
 </div>
 
+<h2>Web Socket</h2>
+<div class="divBlock">
+	<h3 id="h3-1">Installation</h3>
+	<p>For API</p>
+	<p>npm install socket.io socket.io-express</p>
+	<p>For Client-sider</p>
+	<p>npm install socket.io-client</p>
 
+	<h3 id="h3-1">Server Config For API</h3>
+	<p>/config/websocket.config.js</p>
+	<pre><code class="language-javascript">import { Server } from 'socket.io';
+import { createServer } from 'http';
+		
+const startWebSocketServer = () => {
+	const httpServer = createServer();
+	const io = new Server(httpServer);
+
+	io.on('connection', (socket) => {
+		console.log('Client connected');
+
+		socket.on('disconnect', () => {
+			console.log('Client disconnected');
+		});
+	});
+
+	httpServer.listen(3001, () => {
+		console.log('WebSocket server started at http://localhost:3001');
+	});
+
+	return io;
+};
+
+export default startWebSocketServer;</code></pre>
+
+	<h3 id="h3-1">API</h3>
+	<pre><code class="language-javascript">import startWebSocketServer from '../config/websocket.config.js';
+
+const io = startWebSocketServer();
+
+export default function handler(req, res) {
+	if (req.method === 'POST') {
+		const objectItem = {
+			id: 1,
+			username: 'kevin'
+		}
+
+		// Emit the objectItem to connected clients
+		io.emit('objectItem', objectItem);
+
+		res.status(200).json({ message: 'ObjectItem emitted successfully' });
+	} else {
+		res.status(405).json({ message: 'Method Not Allowed' });
+	}
+}</code></pre>
+
+	<h3 id="h3-1">Server Config For API</h3>
+	<p>/index.js</p>
+	<pre><code class="language-javascript">import { useEffect } from 'react';
+import io from 'socket.io-client';
+
+const Home = () => {
+	useEffect(() => {
+		const socket = io('http://localhost:3001'); // Adjust URL based on your server setup
+		socket.on('connect', () => {
+			console.log('Connected to WebSocket server');
+		});
+
+		// Clean up the socket connection
+		return () => {
+			socket.disconnect();
+		};
+	}, []);
+
+	return <div>Home</div>;
+};
+
+export default Home;</code></pre>
+</div>
 
 <!--END write your content here-->
 </div>
