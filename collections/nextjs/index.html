@@ -496,86 +496,136 @@ export default function handler(req, res) {
 }</code></pre>
 </div>
 
+<h2>Eslint</h2>
+<div class="divBlock">
+	<p>It is use during the development to have a check weither there are wrong coding structure.</p>
+	<h3 id="h3-1">Installation</h3>
+	<p>npm install eslint eslint-plugin-react --save-dev</p>
+
+	<h3 id="h3-1">Create config</h3>
+	<p>Run the <b>npx eslint --init</b> in your cmd, this will ask you some questions depending on your project setup</p>
+	<p>or</p>
+	<p>Create file name <b>.eslintrc.js</b> in your root folder and paste the code above</p>
+	<pre><code class="language-javascript">module.exports = {
+"env": {
+		"browser": true,
+		"es2021": true
+},
+"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended"
+],
+"overrides": [
+		{
+				"env": {
+						"node": true
+				},
+				"files": [
+						".eslintrc.{js,cjs}"
+				],
+				"parserOptions": {
+						"sourceType": "script"
+				}
+		}
+],
+"parserOptions": {
+		"ecmaVersion": "latest",
+		"sourceType": "module"
+},
+"plugins": [
+		"react"
+],
+"rules": {
+		"no-unused-vars": "warn",
+		"react/prop-types": "off",
+		"react/react-in-jsx-scope": "off",
+		"no-mixed-spaces-and-tabs": "off"
+}
+}
+</code></pre>
+
+	<h3 id="h3-1">Update your package.json to include the eslint feature in you development</h3>
+	<pre><code class="language-javascript">// make sure you only apply this to development environment
+"dev": "eslint . && next dev",
+// or using cross dev environment
+"dev": "eslint . && cross-env NODE_ENV=development next dev",
+</code></pre>
+</div>
+
 <h2>Web Socket</h2>
 <div class="divBlock">
 	<h3 id="h3-1">Installation</h3>
-	<p>For API</p>
-	<p>npm install socket.io socket.io-express</p>
 	<p>For Client-sider</p>
 	<p>npm install socket.io-client</p>
 
 	<h3 id="h3-1">Server Config For API</h3>
 	<p>/config/websocket.config.js</p>
-	<pre><code class="language-javascript">import { Server } from 'socket.io';
-import { createServer } from 'http';
-		
-const startWebSocketServer = () => {
-	const httpServer = createServer();
-	const io = new Server(httpServer);
+	<pre><code class="language-javascript">import io from 'socket.io-client';
 
-	io.on('connection', (socket) => {
-		console.log('Client connected');
-
-		socket.on('disconnect', () => {
-			console.log('Client disconnected');
-		});
-	});
-
-	httpServer.listen(3001, () => {
-		console.log('WebSocket server started at http://localhost:3001');
-	});
-
-	return io;
-};
-
-export default startWebSocketServer;</code></pre>
-
-	<h3 id="h3-1">API</h3>
-	<pre><code class="language-javascript">import startWebSocketServer from '../config/websocket.config.js';
-
-const io = startWebSocketServer();
-
-export default function handler(req, res) {
-	if (req.method === 'POST') {
-		const objectItem = {
-			id: 1,
-			username: 'kevin'
-		}
-
-		// Emit the objectItem to connected clients
-		io.emit('objectItem', objectItem);
-
-		res.status(200).json({ message: 'ObjectItem emitted successfully' });
-	} else {
-		res.status(405).json({ message: 'Method Not Allowed' });
-	}
+// Function to setup event listeners
+export function setupSocketListeners() {
+	// const conString = process.env.SOCKET_SERVER;
+	return io('http://localhost:4000');
 }</code></pre>
 
-	<h3 id="h3-1">Server Config For API</h3>
-	<p>/index.js</p>
-	<pre><code class="language-javascript">import { useEffect } from 'react';
-		import io from 'socket.io-client';
+	<h3 id="h3-1">Client side / _app.js</h3>
+	<div class="divBlock">
+		<h4>Create socketHandle Component</h4>
+		<p>components/SocketHandler.js</p>
+		<pre><code class="language-javascript">import { useEffect } from 'react';
+import { setupSocketListeners } from '../../config/websocket.client.config';
+import { useDispatch } from 'react-redux';
+import { socketInsertAllBets } from '../../store/modules/bet';
+
+const SocketHandler = ({ children }) => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		const socket = setupSocketListeners();
+
+		socket.on('connect', () => {
+			console.log('connected to socket');
+
+			// create your socket listen here
+			socket.on('listen_all_bets', (data) => {
+				// put your actions you want here
+				// you can use dispatch redux if you want it
+				dispatch(socketInsertAllBets(data));
+			});
+		});
 		
-		const YourComponent = () => {
-			useEffect(() => {
-				const socket = io('http://localhost:3001'); // Adjust URL based on your server setup
-		
-				// Listen for the 'objectItem' event emitted from the server
-				socket.on('objectItem', (data) => {
-					console.log('Received objectItem:', data);
-					// Handle the received data as needed
-				});
-		
-				// Clean up the socket connection
-				return () => {
-					socket.disconnect();
-				};
-			}, []);
-		
-			return <div>Your Component</div>;
+		socket.on('disconnect', () => {});
+
+		// Clean up event listeners when component unmounts
+		return () => {
+			socket.off('connect');
+			socket.off('listen_all_bets');
+			socket.off('disconnect');
 		};
+	}, []);
+
+	return children;
+}
+
+export default SocketHandler;</code></pre>
+
+		<h4>pages/_app.js</h4>
+		<pre><code class="language-javascript">import SocketHandler from '../providers/socketHandler/SocketHandler';
+
+return &lt;SocketHandler>
+	&lt;div className='main'>
 		
-		export default YourComponent;</code></pre>
+	&lt;/div>
+&lt;/SocketHandler>
+</code></pre>
+	</div>
+	
+
+	<h3 id="h3-1">API</h3>
+	<pre><code class="language-javascript">import { setupSocketListeners } from '../../../config/websocket.client.config';
+
+const socket = setupSocketListeners();
+socket.emit('emit_all_bets', responseResult);</code></pre>
 </div>
 
 <!--END write your content here-->
