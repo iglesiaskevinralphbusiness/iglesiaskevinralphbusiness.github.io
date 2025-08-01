@@ -1,0 +1,4 @@
+user-agent: *
+disallow:
+
+sitemap: https://iglesiaskevinralphbusiness.github.io/sitemap.xml
