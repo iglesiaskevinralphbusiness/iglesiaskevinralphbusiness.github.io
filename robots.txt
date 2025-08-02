@@ -1,4 +1,4 @@
 user-agent: *
 disallow:
 
-sitemap: https://iglesiaskevinralphbusiness.github.io/sitemap.xml
+sitemap: https://iglesiaskevinralphbusiness.github.io/sitemap.xml.html
